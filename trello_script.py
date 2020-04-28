@@ -58,6 +58,7 @@ def procesar_json():
         thewriter.writerow(['key', 'card_id', 'card_name', 'member', 'estatus', 'ini_date', 'end_date'])
         cards_dict = trello_dict['cards']
         dict_miembros = miembros(trello_dict)
+        dict_tarjetas = listas(trello_dict)
         id_de_lista_tarjetas_completadas = id_lista_tarjetas_completadas(trello_dict)
         for key in cards_dict:
             card_id = key['id']
@@ -68,19 +69,27 @@ def procesar_json():
                     #print("miembros asociados: " + miembros_asociados[i])
                     lista_nombres_miembros.append(dict_miembros[miembros_asociados[i]])
 
-            print(lista_nombres_miembros)
+            # if lista_nombres_miembros:
+            #     for i in range(len(lista_nombres_miembros)):
+            #          thewriter.writerow([card_id+lista_nombres_miembros[i], card_id, key['name'], lista_nombres_miembros[i], 'estatus', 'ini_date', 'end_date'])
+
+
+
+            # else:
+
+def listas(trello_dict):
+    listas = trello_dict['lists']
+    dict_tarjetas = {}
+    for key in listas:
+        dict_tarjetas.update({key['id'] : key['name']})
+    print(dict_tarjetas)
+    return dict_tarjetas
 
 def id_lista_tarjetas_completadas(trello_dict):
-    lista_tarjetas = []
     listas = trello_dict['lists']
     for key in listas:
         if key['name'] == 'completado':
             return key['id']
-            
-
-
-
-
 
 
 def miembros(trello_dict):
