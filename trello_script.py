@@ -7,6 +7,8 @@ from google.auth.transport.requests import Request
 import sys
 import io
 from googleapiclient.http import MediaIoBaseDownload
+import json
+import csv
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -47,9 +49,35 @@ def download_file_google_drive(file_id, local_fd):
       print ('Download Complete')
       return
 
+def procesar_json():
+    with open('trello_data.json', 'r') as f, open('Processed_Trello_Data.csv', 'w', newline= '') as faux:
+        trello_dict = json.load(f)
+        thewriter = csv.writer(faux)
+        thewriter.writerow(['key', 'card_id', 'card_name', 'member', 'estatus', 'ini_date', 'end_date'])
+        cards_dict = trello_dict['cards']
+        dict_miembros_asociados = miembros_asociados(trello_dict)
+        print(dict_miembros_asociados)
+
+def miembros_asociados(trello_dict):
+    members_dict = trello_dict['members']
+    result_dict ={}
+    for key in members_dict:
+        result_dict.update( {key['id'] : key['fullName']} )
+
+    return result_dict
+
+
+
+
+
+
+        
+
 if __name__ == '__main__':
+    file_io_base = open('trello_data.json','wb')
     try:
-        file_io_base = open('trello_data.json','wb')
         download_file_google_drive(sys.argv[1],file_io_base)
     except IndexError:
         print("Por favor colocar el id del archivo json como argumento")
+
+    procesar_json()
