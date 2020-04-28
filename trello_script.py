@@ -63,19 +63,27 @@ def procesar_json():
         for key in cards_dict:
             card_id = key['id']
             miembros_asociados =  key['idMembers']
-            lista_nombres_miembros = []
-            if miembros_asociados:
-                for i in range(len(miembros_asociados)):
-                    #print("miembros asociados: " + miembros_asociados[i])
-                    lista_nombres_miembros.append(dict_miembros[miembros_asociados[i]])
+            id_lista =key['idList']
+            lista_nombres_miembros = get_nombres_miembros(dict_miembros,miembros_asociados)
+            #print(lista_nombres_miembros)
 
             # if lista_nombres_miembros:
             #     for i in range(len(lista_nombres_miembros)):
-            #          thewriter.writerow([card_id+lista_nombres_miembros[i], card_id, key['name'], lista_nombres_miembros[i], 'estatus', 'ini_date', 'end_date'])
+            #          thewriter.writerow([card_id+lista_nombres_miembros[i], card_id, key['name'], lista_nombres_miembros[i], dict_tarjetas[id_lista], 'ini_date', 'end_date'])
 
 
 
             # else:
+
+
+def get_nombres_miembros(dict_miembros,miembros_asociados):
+    lista_nombres_miembros = []
+    if miembros_asociados:
+        for i in range(len(miembros_asociados)):
+            #print("miembros asociados: " + miembros_asociados[i])
+            lista_nombres_miembros.append(dict_miembros[miembros_asociados[i]])
+
+    return lista_nombres_miembros
 
 def listas(trello_dict):
     listas = trello_dict['lists']
