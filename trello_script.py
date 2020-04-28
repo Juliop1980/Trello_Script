@@ -70,9 +70,13 @@ def procesar_json():
             #print(lista_nombres_miembros)
             init_date = get_init_date(card_id,trello_dict)
 
-            # if lista_nombres_miembros:
-            #     for i in range(len(lista_nombres_miembros)):
-            #          thewriter.writerow([card_id+lista_nombres_miembros[i], card_id, key['name'], lista_nombres_miembros[i], dict_tarjetas[id_lista], 'ini_date', 'end_date'])
+            if lista_nombres_miembros:
+                for i in range(len(lista_nombres_miembros)):
+                     thewriter.writerow([card_id+lista_nombres_miembros[i], card_id, key['name'], lista_nombres_miembros[i], dict_tarjetas[id_lista], init_date, 'end_date'])
+
+            else: 
+                thewriter.writerow([card_id, card_id, key['name'], 'N/A', dict_tarjetas[id_lista], init_date, 'end_date'])
+
 
 
 
