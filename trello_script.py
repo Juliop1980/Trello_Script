@@ -9,6 +9,8 @@ import io
 from googleapiclient.http import MediaIoBaseDownload
 import json
 import csv
+import datetime
+from dateutil import parser
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -66,6 +68,7 @@ def procesar_json():
             id_lista =key['idList']
             lista_nombres_miembros = get_nombres_miembros(dict_miembros,miembros_asociados)
             #print(lista_nombres_miembros)
+            init_date = get_init_date(card_id,trello_dict)
 
             # if lista_nombres_miembros:
             #     for i in range(len(lista_nombres_miembros)):
@@ -74,6 +77,30 @@ def procesar_json():
 
 
             # else:
+
+def get_init_date(card_id, trello_dict):
+
+    actions_dict = trello_dict['actions']
+    date_list = []
+    for key in actions_dict:
+        data = key['data']
+        #print(data)
+        if 'card' in data:
+            card_data = data['card']
+            #print(card_data)
+            card_id_aux = card_data['id']
+            if card_id_aux == card_id:
+                date_list.append(parser.parse(key['date']))
+        #d = datetime.datetime.strptime(key['date'], "%Y-%m-%dT%H:%M:%SZ")
+    if len(date_list)>0:
+        #print(min(date_list))
+        return min(date_list)
+
+    else:
+        return []
+
+
+
 
 
 def get_nombres_miembros(dict_miembros,miembros_asociados):
@@ -90,7 +117,7 @@ def listas(trello_dict):
     dict_tarjetas = {}
     for key in listas:
         dict_tarjetas.update({key['id'] : key['name']})
-    print(dict_tarjetas)
+    #print(dict_tarjetas)
     return dict_tarjetas
 
 def id_lista_tarjetas_completadas(trello_dict):
