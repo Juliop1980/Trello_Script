@@ -8,7 +8,6 @@ from google.auth.transport.requests import Request
 #from pydrive.auth import GoogleAuth
 #from pydrive.drive import GoogleDrive
 
-
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
@@ -38,20 +37,43 @@ drive_service = build('drive', 'v3', credentials=creds)
 
 #crea una carpeta drive solo si no existe alguna carpeta con el mismo nombre
 def crear_carpeta_drive(carpeta):
-	file_metadata = {
-    'name': carpeta,
-    'mimeType': 'application/vnd.google-apps.folder'
-	}
-	file = drive_service.files().create(body=file_metadata,
-	                                    fields='id').execute()
-	print ('Folder ID: %s' % file.get('id'))
+	folder_id_exists = exists_carpeta_drive(carpeta)
+	if not folder_id_exists:
+		file_metadata = {
+	    'name': carpeta,
+	    'mimeType': 'application/vnd.google-apps.folder'
+		}
+		file = drive_service.files().create(body=file_metadata,
+		                                    fields='id').execute()
+
+		folder_id = file.get('id')
+
+	else:
+		folder_id = folder_id_exists
+
+	print ('Folder ID: %s' % folder_id)
 
 
-def exists_carpeta_dripe(carpeta):
+def exists_carpeta_drive(carpeta):
+	#gauth = GoogleAuth()
+	#gauth.LocalWebserverAuth()
+	#drive = GoogleDrive(gauth)
+	response = drive_service.list(q="name='June 2019' and mimeType='application/vnd.google-apps.folder'",driveId='abcdef',corpora='drive', includeItemsFromAllDrives=True, supportsAllDrives=True).execute()
+	file_list = retrieve_all_files(drive_service)
+	for item in response.get('files', []):
+		return item['id']
+
+	return false
 
 
 
 if __name__ == '__main__':
-	crear_carpeta_drive("hola")
+	try:
+		file_io_base = open('trello_data_api.json','wb')
+	#download_file_google_drive(sys.argv[1],file_io_base)
+		crear_carpeta_drive("hola")
+	#procesar_json()
 
+	except IndexError:
+		print("Por favor colocar el nombre del board del cual quiere informacion como argumento")
 
