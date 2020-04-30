@@ -19,19 +19,19 @@ creds = None
 # created automatically when the authorization flow completes for the first
 # time.
 if os.path.exists('token.pickle'):
-    with open('token.pickle', 'rb') as token:
-        creds = pickle.load(token)
+	with open('token.pickle', 'rb') as token:
+		creds = pickle.load(token)
 # If there are no (valid) credentials available, let the user log in.
 if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            'credentials.json', SCOPES)
-        creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
-    with open('token.pickle', 'wb') as token:
-        pickle.dump(creds, token)
+	if creds and creds.expired and creds.refresh_token:
+		creds.refresh(Request())
+	else:
+		flow = InstalledAppFlow.from_client_secrets_file(
+			'credentials.json', SCOPES)
+		creds = flow.run_local_server(port=0)
+	# Save the credentials for the next run
+	with open('token.pickle', 'wb') as token:
+		pickle.dump(creds, token)
 
 drive_service = build('drive', 'v3', credentials=creds)
 
@@ -40,30 +40,35 @@ def crear_carpeta_drive(carpeta):
 	folder_id_exists = exists_carpeta_drive(carpeta)
 	if not folder_id_exists:
 		file_metadata = {
-	    'name': carpeta,
-	    'mimeType': 'application/vnd.google-apps.folder'
+		'name': carpeta,
+		'mimeType': 'application/vnd.google-apps.folder'
 		}
 		file = drive_service.files().create(body=file_metadata,
-		                                    fields='id').execute()
+											fields='id').execute()
 
 		folder_id = file.get('id')
 
 	else:
 		folder_id = folder_id_exists
 
-	print ('Folder ID: %s' % folder_id)
 
-
+#retorna false si la carpeta no existe. De lo contrario retorna el id de la carpeta en el drive
 def exists_carpeta_drive(carpeta):
 	#gauth = GoogleAuth()
 	#gauth.LocalWebserverAuth()
 	#drive = GoogleDrive(gauth)
-	response = drive_service.list(q="name='June 2019' and mimeType='application/vnd.google-apps.folder'",driveId='abcdef',corpora='drive', includeItemsFromAllDrives=True, supportsAllDrives=True).execute()
-	file_list = retrieve_all_files(drive_service)
-	for item in response.get('files', []):
-		return item['id']
+	query = "name = '" + carpeta + "' and mimeType='application/vnd.google-apps.folder' "
+	page_token = None
+	response = drive_service.files().list(q=query,spaces='drive',fields='nextPageToken, files(id, name)',pageToken=page_token).execute()
+	
+	for file in response.get('files', []):
+		# Process change
+		return file.get('id')
+	page_token = response.get('nextPageToken', None)
+	if page_token is None:
+		return false
 
-	return false
+	
 
 
 
