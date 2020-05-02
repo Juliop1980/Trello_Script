@@ -72,19 +72,24 @@ def exists_carpeta_drive(carpeta):
 		return False
 
 
-#retorna el id del archivo del drive subido
+#retorna el id del archivo del drive subido, cheque si ya esta el archivo en la carpeta. Si no, lo crea
 def subir_file(file,carpeta_dest):
 	folder_id = crear_carpeta_drive(carpeta_dest)
-	file_metadata = {
-	    'name': file,
-	    'parents': [folder_id]
-	}
-	media = MediaFileUpload(file,mimetype=None,resumable=True)
+	file_id = exist_file_in_carpeta(file, carpeta_dest)
+	if not file_id:
+		file_metadata = {
+		    'name': file,
+		    'parents': [folder_id]
+		}
+		media = MediaFileUpload(file,mimetype=None,resumable=True)
 
-	file = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
-	print ('File ID: %s' % file.get('id'))
-	return file.get('id')
+		file_id = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
+	#print ('File ID: %s' % file_id.get('id'))
+	return file_id.get('id')
 #retorna el id del archivo del drive subido
+
+#chequea si existe un archivo dentro de una carpeta y devuelve el id si existe. De lo contrario devuelve False
+def exist_file_in_carpeta(file_name, carpeta_name):
 
 
 	
@@ -93,10 +98,10 @@ def subir_file(file,carpeta_dest):
 
 if __name__ == '__main__':
 	try:
-		file_io_base = open('trello_data_api.csv','wb')
+		#file_io_base = open('trello_data_api.csv','wb')
 	#download_file_google_drive(sys.argv[1],file_io_base)
-		crear_carpeta_drive("Trello_Data")
-		subir_file('trello_data_api.csv',"Trello_Data")
+		#crear_carpeta_drive("Trello_Data")
+		subir_file('Processed_Trello_Data.csv',"Trello_Data")
 	#procesar_json()
 
 	except IndexError:
