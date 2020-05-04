@@ -72,7 +72,7 @@ def exists_carpeta_drive(carpeta):
 		return False
 
 
-#retorna el id del archivo del drive subido, cheque si ya esta el archivo en la carpeta. Si no, lo crea
+#retorna el id del archivo del drive subido, chequea si ya esta el archivo en la carpeta. Si no, lo crea
 def subir_file(file,carpeta_dest):
 	folder_id = crear_carpeta_drive(carpeta_dest)
 	file_id = exist_file_in_carpeta(file, carpeta_dest)
@@ -83,13 +83,45 @@ def subir_file(file,carpeta_dest):
 		}
 		media = MediaFileUpload(file,mimetype=None,resumable=True)
 
-		file_id = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
-	#print ('File ID: %s' % file_id.get('id'))
-	return file_id.get('id')
+		file_id_aux = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
+		file_id = file_id_aux.get('id')
+
+	if file_id:
+		text = input("Ya existe un archivo con el mismo nombre en la carpeta " + carpeta_dest + ". Desea reemplazar el archivo? (S/N)")
+		if text == 's' or text == 'S':
+			eliminar_file(file_id)
+			file_metadata = {
+		    'name': file,
+		    'parents': [folder_id]
+			}
+			media = MediaFileUpload(file,mimetype=None,resumable=True)
+
+			file_id_aux = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
+			file_id = file_id_aux.get('id')
+
+
+
+	print ('File ID: %s' % file_id)
+	return file_id
 #retorna el id del archivo del drive subido
 
 #chequea si existe un archivo dentro de una carpeta y devuelve el id si existe. De lo contrario devuelve False
 def exist_file_in_carpeta(file_name, carpeta_name):
+	id_carpeta = crear_carpeta_drive(carpeta_name)
+	query = "'" + id_carpeta + "' in parents and " + "name = '" + file_name + "' and mimeType != 'application/vnd.google-apps.folder' "
+	#print(query)
+	page_token = None
+	response = drive_service.files().list(q=query,spaces='drive',fields='nextPageToken, files(id, name)',pageToken=page_token).execute()
+	
+	for file in response.get('files', []):
+		# Process change
+		return file.get('id')
+	page_token = response.get('nextPageToken', None)
+	if page_token is None:
+		return False
+
+
+def eliminar_file(file_id):
 
 
 	
