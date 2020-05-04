@@ -6,11 +6,19 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from apiclient.http import MediaFileUpload
+from trello_credentials import *  
+import json
+# importing the requests library 
+import requests
 #from pydrive.auth import GoogleAuth
 #from pydrive.drive import GoogleDrive
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
+
+# defining a params dict for the parameters to be sent to the Trello API
+PARAMS = {'key':API_Key, 'token': API_Token}
+
 
 """Shows basic usage of the Drive v3 API.
 Prints the names and ids of the first 10 files the user has access to.
@@ -153,8 +161,19 @@ def subir_file_csv_spreadsheet(file_name, carpeta_name):
 #                                     addParents=folder_id).execute()
 
 
-
-
+def search_board(board_name):
+	# defining a params dict for the parameters to be sent to the API
+	# Trello api-endpoint
+	# Trello api-endpoint 
+	URL = 'https://api.trello.com/1/members/me/boards'
+	#url = 'https://api.trello.com/1/members/me/boards?key=' + API_Key + '&token=' + API_Token
+	# sending get request and saving the response as response object 
+	r = requests.get(url = URL, params = PARAMS) 
+	# extracting data in json format 
+	boards_dict = r.json()
+	print(boards_dict)
+	#print (requests.get(url).json())
+	#print(data)
 
 	
 
@@ -168,6 +187,9 @@ if __name__ == '__main__':
 		#subir_file_csv_spreadsheet('Processed_Trello_Data.csv',"Trello_Data")
 
 	#procesar_json()
+		with open('trello_data.json', 'r') as f, open('Processed_Trello_Data.csv', 'w', newline= '') as faux:
+			board_id = search_board(sys.argv[1])
+
 
 	except IndexError:
 		print("Por favor colocar el nombre del board del cual quiere informacion como argumento")
