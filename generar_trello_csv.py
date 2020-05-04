@@ -40,12 +40,8 @@ drive_service = build('drive', 'v3', credentials=creds)
 def crear_carpeta_drive(carpeta):
 	folder_id_exists = exists_carpeta_drive(carpeta)
 	if not folder_id_exists:
-		file_metadata = {
-		'name': carpeta,
-		'mimeType': 'application/vnd.google-apps.folder'
-		}
-		file = drive_service.files().create(body=file_metadata,
-											fields='id').execute()
+		file_metadata = {'name': carpeta,'mimeType': 'application/vnd.google-apps.folder'}
+		file = drive_service.files().create(body=file_metadata,fields='id').execute()
 
 		folder_id = file.get('id')
 
@@ -87,13 +83,10 @@ def subir_file(file,carpeta_dest):
 		file_id = file_id_aux.get('id')
 
 	if file_id:
-		text = input("Ya existe un archivo con el mismo nombre en la carpeta " + carpeta_dest + ". Desea reemplazar el archivo? (S/N)")
+		text = input("Ya existe un archivo con el nombre " + file + " en la carpeta " + carpeta_dest + ". Desea reemplazar el archivo? (S/N)")
 		if text == 's' or text == 'S':
 			delete_file(drive_service, file_id)
-			file_metadata = {
-		    'name': file,
-		    'parents': [folder_id]
-			}
+			file_metadata = {'name': file,'parents': [folder_id]}
 			media = MediaFileUpload(file,mimetype=None,resumable=True)
 
 			file_id_aux = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
@@ -119,6 +112,7 @@ def exist_file_in_carpeta(file_name, carpeta_name):
 	page_token = response.get('nextPageToken', None)
 	if page_token is None:
 		return False
+	return False
 
 def delete_file(service, file_id):
   """Permanently delete a file, skipping the trash.
@@ -133,6 +127,34 @@ def delete_file(service, file_id):
     print ('An error occurred:')
 
 
+#hace lo mismo que subir_file, solo que lo pasa a google sheets desde csv
+def subir_file_csv_spreadsheet(file_name, carpeta_name):
+	folder_id = crear_carpeta_drive(carpeta_name)
+	file_aux = file_name + ".gs"
+	file_id = exist_file_in_carpeta(file_aux, carpeta_name)
+		#text = input("Ya existe un archivo con el nombre " + file_aux + " en la carpeta " + carpeta_name + ". Desea reemplazar el archivo? (S/N)")
+	delete_file(drive_service, file_id)
+	file_metadata = {'name': file_aux,'mimeType': 'application/vnd.google-apps.spreadsheet','parents': [folder_id]}
+	media = MediaFileUpload(file_name,mimetype='text/csv',resumable=True)
+
+	file_id_aux = drive_service.files().create(body=file_metadata,media_body=media,fields='id').execute()
+	file_id = file_id_aux.get('id')
+
+	#move_file(file_id,carpeta_name)
+	#file = drive_service.files().update(fileId=file_id,addParents=folder_id).execute()
+
+	#print ('File ID: %s' % file_id)
+	return file_id
+
+# def move_file(file_id, carpeta_name):
+# 	folder_id = crear_carpeta_drive(carpeta_name)
+
+# 	file = drive_service.files().update(fileId=file_id,
+#                                     addParents=folder_id).execute()
+
+
+
+
 
 	
 
@@ -143,7 +165,7 @@ if __name__ == '__main__':
 		#file_io_base = open('trello_data_api.csv','wb')
 	#download_file_google_drive(sys.argv[1],file_io_base)
 		#crear_carpeta_drive("Trello_Data")
-		subir_file('Processed_Trello_Data.csv',"Trello_Data")
+		subir_file_csv_spreadsheet('Processed_Trello_Data.csv',"Trello_Data")
 	#procesar_json()
 
 	except IndexError:
