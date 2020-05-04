@@ -165,7 +165,8 @@ if __name__ == '__main__':
 		#file_io_base = open('trello_data_api.csv','wb')
 	#download_file_google_drive(sys.argv[1],file_io_base)
 		#crear_carpeta_drive("Trello_Data")
-		subir_file_csv_spreadsheet('Processed_Trello_Data.csv',"Trello_Data")
+		#subir_file_csv_spreadsheet('Processed_Trello_Data.csv',"Trello_Data")
+
 	#procesar_json()
 
 	except IndexError:
