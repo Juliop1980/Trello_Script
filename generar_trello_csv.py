@@ -60,7 +60,7 @@ def exists_carpeta_drive(carpeta):
 	#gauth = GoogleAuth()
 	#gauth.LocalWebserverAuth()
 	#drive = GoogleDrive(gauth)
-	query = "name = '" + carpeta + "' and mimeType='application/vnd.google-apps.folder' "
+	query = "name = '" + carpeta + "' and mimeType='application/vnd.google-apps.folder' and trashed = false"
 	page_token = None
 	response = drive_service.files().list(q=query,spaces='drive',fields='nextPageToken, files(id, name)',pageToken=page_token).execute()
 	
@@ -89,7 +89,7 @@ def subir_file(file,carpeta_dest):
 	if file_id:
 		text = input("Ya existe un archivo con el mismo nombre en la carpeta " + carpeta_dest + ". Desea reemplazar el archivo? (S/N)")
 		if text == 's' or text == 'S':
-			eliminar_file(file_id)
+			delete_file(drive_service, file_id)
 			file_metadata = {
 		    'name': file,
 		    'parents': [folder_id]
@@ -120,8 +120,18 @@ def exist_file_in_carpeta(file_name, carpeta_name):
 	if page_token is None:
 		return False
 
+def delete_file(service, file_id):
+  """Permanently delete a file, skipping the trash.
 
-def eliminar_file(file_id):
+  Args:
+    service: Drive API service instance.
+    file_id: ID of the file to delete.
+  """
+  try:
+    service.files().delete(fileId=file_id).execute()
+  except:
+    print ('An error occurred:')
+
 
 
 	
