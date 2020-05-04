@@ -160,7 +160,7 @@ def subir_file_csv_spreadsheet(file_name, carpeta_name):
 # 	file = drive_service.files().update(fileId=file_id,
 #                                     addParents=folder_id).execute()
 
-
+#retorna el board
 def search_board(board_name):
 	# defining a params dict for the parameters to be sent to the API
 	# Trello api-endpoint
