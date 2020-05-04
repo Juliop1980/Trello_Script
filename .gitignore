@@ -1,5 +1,4 @@
-credentials.json
 token.pickle
-trello_data.json
-Processed_Trello_Data.csv
 trello_credentials.py
+*.csv
+*.json
