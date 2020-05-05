@@ -193,7 +193,16 @@ def cards_of_board(board):
 	return r.json()
 
 
+def list_of_card(card):
+	URL = 'https://api.trello.com/1/cards/' + card['id'] + '/list'
+	#url = 'https://api.trello.com/1/members/me/boards?key=' + API_Key + '&token=' + API_Token
+	# sending get request and saving the response as response object 
+	r = requests.get(url = URL, params = PARAMS) 
+	# extracting data in json format 
 	
+
+	return r.json()
+
 
 
 
@@ -210,7 +219,9 @@ if __name__ == '__main__':
 			#print(target_board)
 			cards = cards_of_board(target_board)
 			for key in cards:
-				print(key['id'])
+				members =
+				list_card = list_of_card(key)
+
 
 
 
