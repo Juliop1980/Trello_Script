@@ -181,6 +181,18 @@ def search_board(board_name):
 	#print (requests.get(url).json())
 	#print(data)
 
+#te devuelve la lista de tarjetas de un board
+def cards_of_board(board):
+	URL = 'https://api.trello.com/1/boards/' + board['id'] + '/cards'
+	#url = 'https://api.trello.com/1/members/me/boards?key=' + API_Key + '&token=' + API_Token
+	# sending get request and saving the response as response object 
+	r = requests.get(url = URL, params = PARAMS) 
+	# extracting data in json format 
+	
+
+	return r.json()
+
+
 	
 
 
@@ -195,7 +207,11 @@ if __name__ == '__main__':
 	#procesar_json()
 		with open('trello_data.json', 'r') as f, open('Processed_Trello_Data.csv', 'w', newline= '') as faux:
 			target_board = search_board(sys.argv[1])
-			print(target_board)
+			#print(target_board)
+			cards = cards_of_board(target_board)
+			for key in cards:
+				print(key['id'])
+
 
 
 	except IndexError:
