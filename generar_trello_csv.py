@@ -82,8 +82,8 @@ def subir_file(file,carpeta_dest):
 	file_id = exist_file_in_carpeta(file, carpeta_dest)
 	if not file_id:
 		file_metadata = {
-		    'name': file,
-		    'parents': [folder_id]
+			'name': file,
+			'parents': [folder_id]
 		}
 		media = MediaFileUpload(file,mimetype=None,resumable=True)
 
@@ -123,16 +123,17 @@ def exist_file_in_carpeta(file_name, carpeta_name):
 	return False
 
 def delete_file(service, file_id):
-  """Permanently delete a file, skipping the trash.
 
-  Args:
-    service: Drive API service instance.
-    file_id: ID of the file to delete.
-  """
-  try:
-    service.files().delete(fileId=file_id).execute()
-  except:
-    print ('An error occurred:')
+	"""Permanently delete a file, skipping the trash.
+
+	Args:
+	service: Drive API service instance.
+	file_id: ID of the file to delete.
+	"""
+	try:
+		service.files().delete(fileId=file_id).execute()
+	except:
+		print ('An error occurred:')
 
 
 #hace lo mismo que subir_file, solo que lo pasa a google sheets desde csv
@@ -160,7 +161,7 @@ def subir_file_csv_spreadsheet(file_name, carpeta_name):
 # 	file = drive_service.files().update(fileId=file_id,
 #                                     addParents=folder_id).execute()
 
-#retorna el board
+#retorna el board, si no lo encuentra retorna False
 def search_board(board_name):
 	# defining a params dict for the parameters to be sent to the API
 	# Trello api-endpoint
@@ -171,7 +172,12 @@ def search_board(board_name):
 	r = requests.get(url = URL, params = PARAMS) 
 	# extracting data in json format 
 	boards_dict = r.json()
-	print(boards_dict)
+
+	for key in boards_dict:
+		if key['name'] == board_name:
+			return key
+	return False
+	
 	#print (requests.get(url).json())
 	#print(data)
 
@@ -188,7 +194,8 @@ if __name__ == '__main__':
 
 	#procesar_json()
 		with open('trello_data.json', 'r') as f, open('Processed_Trello_Data.csv', 'w', newline= '') as faux:
-			board_id = search_board(sys.argv[1])
+			target_board = search_board(sys.argv[1])
+			print(target_board)
 
 
 	except IndexError:
