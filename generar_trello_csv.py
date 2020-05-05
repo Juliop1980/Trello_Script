@@ -14,6 +14,7 @@ import requests
 #from pydrive.drive import GoogleDrive
 import pytz
 from datetime import datetime
+import csv
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -104,7 +105,7 @@ def subir_file(file,carpeta_dest):
 
 
 
-	print ('File ID: %s' % file_id)
+	#print ('File ID: %s' % file_id)
 	return file_id
 #retorna el id del archivo del drive subido
 
@@ -233,7 +234,10 @@ if __name__ == '__main__':
 		#subir_file_csv_spreadsheet('Processed_Trello_Data.csv',"Trello_Data")
 
 	#procesar_json()
-		with open('trello_data.json', 'r') as f, open('Processed_Trello_Data.csv', 'w', newline= '') as faux:
+
+		with open('Processed_Trello_Data.csv', 'w', newline= '') as faux:
+			thewriter = csv.writer(faux)
+			thewriter.writerow(['key', 'card_id', 'card_name', 'member', 'estatus', 'ini_date', 'end_date'])
 			target_board = search_board(sys.argv[1])
 			#print(target_board)
 			cards = cards_of_board(target_board)
@@ -249,7 +253,18 @@ if __name__ == '__main__':
 					end_date = key['dateLastActivity']
 				#print(ini_date)
 				members = members_of_card(key)
-				print(members)
+				if len(members)>0:
+					for member in members:
+					#thewriter.writerow([card_id, card_id, key['name'], 'N/A', dict_tarjetas[id_lista], init_date, 'end_date'])
+						thewriter.writerow([key['id']+member['fullName'] , key['id'], key['name'], member['fullName'], list_card['name'], ini_date, end_date])
+
+				else:
+					thewriter.writerow([key['id'], key['id'], key['name'], 'N/A', list_card['name'], ini_date, end_date])
+
+		crear_carpeta_drive('Trello_Data')
+		subir_file('Processed_Trello_Data.csv', 'Trello_Data')
+		subir_file_csv_spreadsheet('Processed_Trello_Data.csv', 'Trello_Data')
+
 
 
 
