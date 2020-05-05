@@ -12,6 +12,8 @@ import json
 import requests
 #from pydrive.auth import GoogleAuth
 #from pydrive.drive import GoogleDrive
+import pytz
+from datetime import datetime
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -170,6 +172,7 @@ def search_board(board_name):
 	#url = 'https://api.trello.com/1/members/me/boards?key=' + API_Key + '&token=' + API_Token
 	# sending get request and saving the response as response object 
 	r = requests.get(url = URL, params = PARAMS) 
+	#print(r)
 	# extracting data in json format 
 	boards_dict = r.json()
 
@@ -198,7 +201,7 @@ def list_of_card(card):
 	#url = 'https://api.trello.com/1/members/me/boards?key=' + API_Key + '&token=' + API_Token
 	# sending get request and saving the response as response object 
 	r = requests.get(url = URL, params = PARAMS) 
-	print(r)
+	#print(r)
 	# extracting data in json format 
 	
 
@@ -214,6 +217,11 @@ def members_of_card(card):
 
 	return r.json()
 
+def get_creation_date(card):
+	id_card = card['id']
+	creation_time = datetime.fromtimestamp(int(id_card[0:8],16))
+	utc_creation_time = pytz.utc.localize(creation_time)
+	return utc_creation_time
 
 
 
@@ -231,9 +239,17 @@ if __name__ == '__main__':
 			cards = cards_of_board(target_board)
 			for key in cards:
 				list_card = list_of_card(key)
+				#print(list_card)
+				#status = list_card['name']
 				completado = (list_card['name']=='Presales Process Done (100%)')
-				print(completado)
+				#print(completado)
+				ini_date= get_creation_date(key)
+				end_date = 'N/A'
+				if completado:
+					end_date = key['dateLastActivity']
+				#print(ini_date)
 				members = members_of_card(key)
+				print(members)
 
 
 
