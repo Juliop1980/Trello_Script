@@ -198,6 +198,7 @@ def list_of_card(card):
 	#url = 'https://api.trello.com/1/members/me/boards?key=' + API_Key + '&token=' + API_Token
 	# sending get request and saving the response as response object 
 	r = requests.get(url = URL, params = PARAMS) 
+	print(r)
 	# extracting data in json format 
 	
 
@@ -230,6 +231,8 @@ if __name__ == '__main__':
 			cards = cards_of_board(target_board)
 			for key in cards:
 				list_card = list_of_card(key)
+				completado = (list_card['name']=='Presales Process Done (100%)')
+				print(completado)
 				members = members_of_card(key)
 
 
